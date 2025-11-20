@@ -6,4 +6,7 @@ public class Board {
     public Piece getPiece(Square square) {
         return null;
     }
+    public Square getEnPassantTarget(){
+        return null;
+    }
 }

@@ -13,7 +13,16 @@ public record Square(int file, int rank) {
         return String.format("%c%d", file, rank);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Square(int file1, int rank1)) {
+            return this.file == file1 && this.rank == rank1;
+        }
+        return false;
+    }
+
     public boolean isValid() {
         return file >= 0 && file < 8 && rank >= 0 && rank < 8;
     }
+
 }

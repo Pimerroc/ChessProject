@@ -4,7 +4,7 @@ import main.java.com.chess.model.board.Board;
 import main.java.com.chess.model.board.Square;
 
 public abstract class Piece {
-    final PieceColor color;
+    protected final PieceColor color;
 
     public Piece(PieceColor color) {
         this.color = color;
