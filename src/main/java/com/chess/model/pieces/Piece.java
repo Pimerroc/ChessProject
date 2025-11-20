@@ -10,12 +10,13 @@ public abstract class Piece {
         this.color = color;
     }
 
-    public PieceColor getColor(){
+    public PieceColor getColor() {
         return this.color;
     }
 
     public abstract boolean canMove(Board board, Square start, Square end);
-    boolean isTargetSquareValid(Board board, Square end){
+
+    boolean isTargetSquareValid(Board board, Square end) {
         Piece piece = board.getPiece(end);
         return piece == null || piece.color != this.color;
     }
