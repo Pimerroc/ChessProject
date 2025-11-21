@@ -1,4 +1,4 @@
-package main.java.com.chess;
+package com.chess;
 
 public class Main {
 }

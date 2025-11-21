@@ -1,7 +1,7 @@
-package main.java.com.chess.model.pieces.piecesImpl;
+package com.chess.model.pieces.piecesImpl;
 
-import main.java.com.chess.model.board.*;
-import main.java.com.chess.model.pieces.*;
+import com.chess.model.board.*;
+import com.chess.model.pieces.*;
 
 public class Pawn extends Piece {
 

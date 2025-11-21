@@ -1,7 +1,7 @@
-package main.java.com.chess.model.board;
+package com.chess.model.board;
 
-import main.java.com.chess.model.pieces.Piece;
-import main.java.com.chess.model.pieces.PieceColor;
+import com.chess.model.pieces.Piece;
+import com.chess.model.pieces.PieceColor;
 
 public class Board {
     public Piece getPiece(Square square) {

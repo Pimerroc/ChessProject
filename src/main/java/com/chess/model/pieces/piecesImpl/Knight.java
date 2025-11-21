@@ -1,9 +1,9 @@
-package main.java.com.chess.model.pieces.piecesImpl;
+package com.chess.model.pieces.piecesImpl;
 
-import main.java.com.chess.model.board.Board;
-import main.java.com.chess.model.board.Square;
-import main.java.com.chess.model.pieces.Piece;
-import main.java.com.chess.model.pieces.PieceColor;
+import com.chess.model.board.Board;
+import com.chess.model.board.Square;
+import com.chess.model.pieces.Piece;
+import com.chess.model.pieces.PieceColor;
 
 public class Knight extends Piece {
 

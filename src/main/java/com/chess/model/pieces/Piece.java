@@ -1,7 +1,7 @@
-package main.java.com.chess.model.pieces;
+package com.chess.model.pieces;
 
-import main.java.com.chess.model.board.Board;
-import main.java.com.chess.model.board.Square;
+import com.chess.model.board.Board;
+import com.chess.model.board.Square;
 
 public abstract class Piece {
     protected final PieceColor color;

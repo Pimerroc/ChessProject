@@ -1,4 +1,4 @@
-package main.java.com.chess.model.board;
+package com.chess.model.board;
 
 /**
  * @param file - передается число от 0 до 7 соответсвующее символам от a до h.
