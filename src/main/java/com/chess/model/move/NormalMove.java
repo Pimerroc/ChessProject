@@ -11,6 +11,7 @@ public class NormalMove extends Move {
 
     @Override
     public void execute() {
+        this.oldHasMovedState = movedPiece.hasMoved();
         this.capturedPiece = board.getPiece(end);
         this.oldEnPassantTarget = board.getEnPassantTarget();
 
@@ -19,6 +20,7 @@ public class NormalMove extends Move {
 
         board.updateEnPassantState(movedPiece, start, end);
 
+        movedPiece.setHasMoved(true);
         board.switchTurn();
     }
 
@@ -26,7 +28,7 @@ public class NormalMove extends Move {
     public void undo() {
         board.setPiece(start, movedPiece);
         board.setPiece(end, capturedPiece);
-
+        movedPiece.setHasMoved(oldHasMovedState);
         board.setEnPassantTarget(oldEnPassantTarget);
         board.switchTurn();
     }

@@ -5,6 +5,15 @@ import com.chess.model.board.Square;
 
 public abstract class Piece {
     protected final PieceColor color;
+    private boolean hasMoved = false;
+
+    public boolean hasMoved() {
+        return hasMoved;
+    }
+
+    public void setHasMoved(boolean hasMoved) {
+        this.hasMoved = hasMoved;
+    }
 
     public Piece(PieceColor color) {
         this.color = color;
