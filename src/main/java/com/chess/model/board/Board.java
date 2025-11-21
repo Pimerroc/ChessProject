@@ -1,9 +1,12 @@
 package com.chess.model.board;
 
+import com.chess.model.GameState;
 import com.chess.model.move.Move;
 import com.chess.model.pieces.Piece;
 import com.chess.model.pieces.PieceColor;
 import com.chess.model.pieces.impl.*;
+
+import java.util.*;
 
 public class Board {
     private final Piece[][] grid = new Piece[8][8];
@@ -121,5 +124,63 @@ public class Board {
 
     public void setEnPassantTarget(Square sq) {
         enPassantTarget = sq;
+    }
+
+    /**
+     * ГЛАВНЫЙ МЕТОД ЛОГИКИ.
+     * Возвращает только те ходы, которые разрешены правилами (нет шаха королю).
+     */
+    public List<Move> getLegalMovesForPiece(Square square) {
+        Piece piece = getPiece(square);
+        if (piece == null) return Collections.emptyList();
+
+        List<Move> pseudoMoves = piece.getPseudoLegalMoves(this, square);
+        List<Move> legalMoves = new ArrayList<>();
+
+        for (Move move : pseudoMoves) {
+            move.execute();
+
+            PieceColor myColor = movingColor.getOpposite();
+            Square kingSquare = findKing(myColor);
+
+            if (!isSquareAttacked(kingSquare, movingColor)) {
+                legalMoves.add(move);
+            }
+
+            move.undo();
+        }
+        return legalMoves;
+    }
+    public GameState checkGameState() {
+        PieceColor current = getMovingColor();
+
+        boolean hasLegalMoves = false;
+
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Piece p = grid[i][j];
+                if (p != null && p.getColor() == current) {
+                    if (!getLegalMovesForPiece(new Square(i, j)).isEmpty()) {
+                        hasLegalMoves = true;
+                        break;
+                    }
+                }
+            }
+            if (hasLegalMoves) break;
+        }
+
+        Square kingPos = findKing(current);
+        boolean isCheck = isSquareAttacked(kingPos, current.getOpposite());
+
+        if (isCheck && !hasLegalMoves) {
+            return GameState.CHECKMATE;
+        }
+        if (!isCheck && !hasLegalMoves) {
+            return GameState.STALEMATE;
+        }
+        if (isCheck) {
+            return GameState.CHECK;
+        }
+        return GameState.PLAYING;
     }
 }

@@ -13,7 +13,7 @@ public class Rook extends Piece {
 
     @Override
     public boolean canMove(Board board, Square start, Square end) {
-        if (isTargetSquareInvalid(board, end)) {
+        if (isMoveInvalid(board, start, end)) {
             return false;
         }
         int dx = start.file() - end.file();

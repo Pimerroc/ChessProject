@@ -13,7 +13,7 @@ public class Bishop extends Piece {
 
     @Override
     public boolean canMove(Board board, Square start, Square end) {
-        if (isTargetSquareInvalid(board, end) || start.equals(end)){
+        if (isMoveInvalid(board, start, end)){
             return false;
         }
 
