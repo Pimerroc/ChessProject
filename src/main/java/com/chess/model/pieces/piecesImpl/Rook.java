@@ -12,6 +12,14 @@ public class Rook extends Piece {
 
     @Override
     public boolean canMove(Board board, Square start, Square end) {
-        return false;
+        if (!isTargetSquareValid(board, end)) {
+            return false;
+        }
+        int dx = start.file() - end.file();
+        int dy = start.file() - end.file();
+        
+        if (dx != 0 && dy != 0) return false;
+    
+        return Util.noOneBlocksThePath(board, start, end);
     }
 }
