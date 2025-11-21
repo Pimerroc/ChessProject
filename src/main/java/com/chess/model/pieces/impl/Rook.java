@@ -24,7 +24,7 @@ public class Rook extends Piece {
             return false;
         }
         int dx = start.file() - end.file();
-        int dy = start.file() - end.file();
+        int dy = start.rank() - end.rank();
 
         if (dx != 0 && dy != 0) return false;
 

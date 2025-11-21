@@ -9,10 +9,19 @@
     <version>0.alfa</version>
 
     <properties>
+        <project.built.sourceEncoding>UTF-8</project.built.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
-        <project.built.sourceEncoding>UTF-8</project.built.sourceEncoding>
         <javafx.version>17.0.6</javafx.version>
         <junit.version>5.9.2</junit.version>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.9.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>

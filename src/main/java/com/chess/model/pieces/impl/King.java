@@ -28,6 +28,7 @@ public class King extends Piece {
         for (int dx = -1; dx < 2; dx++) {
             for (int dy = -1; dy < 2; dy++) {
                 Square target = new Square(start.file() + dx, start.rank() + dy);
+                addMoveIfValid(board, start, target, moves);
             }
         }
 
