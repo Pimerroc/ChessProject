@@ -19,7 +19,7 @@ public class CastlingMove extends Move {
 
     @Override
     public void execute() {
-        this.oldEnPassantTarget = board.getEnPassantTarget();
+        super.commonExecuteInit();
 
         board.setPiece(end, movedPiece);
         board.setPiece(start, null);

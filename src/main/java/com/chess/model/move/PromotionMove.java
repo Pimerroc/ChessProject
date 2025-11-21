@@ -14,8 +14,8 @@ public class PromotionMove extends Move {
 
     @Override
     public void execute() {
+        super.commonExecuteInit();
         this.capturedPiece = board.getPiece(end);
-        this.oldEnPassantTarget = board.getEnPassantTarget();
 
         board.setPiece(start, null);
         board.setPiece(end, promotionPiece);
@@ -29,7 +29,7 @@ public class PromotionMove extends Move {
         board.setPiece(start, movedPiece);
         board.setPiece(end, capturedPiece);
 
-        board.setEnPassantTarget(oldEnPassantTarget);
+        super.restoreState();
         board.switchTurn();
     }
 }

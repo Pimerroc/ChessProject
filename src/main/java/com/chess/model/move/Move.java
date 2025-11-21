@@ -29,4 +29,15 @@ public abstract class Move {
     }
 
     public Square getEnd() { return end; }
+
+    protected void commonExecuteInit() {
+        this.oldHasMovedState = movedPiece.hasMoved();
+        this.oldEnPassantTarget = board.getEnPassantTarget();
+        movedPiece.setHasMoved(true);
+    }
+
+    protected void restoreState() {
+        movedPiece.setHasMoved(oldHasMovedState);
+        board.setEnPassantTarget(oldEnPassantTarget);
+    }
 }
