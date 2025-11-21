@@ -11,6 +11,9 @@ import java.util.*;
 public class Board {
     private final Piece[][] grid = new Piece[8][8];
 
+    private final List<Piece> whitePieces = new ArrayList<>();
+    private final List<Piece> blackPieces = new ArrayList<>();
+
     private PieceColor movingColor;
 
     private Square enPassantTarget;
@@ -59,9 +62,42 @@ public class Board {
     }
 
     public void setPiece(Square square, Piece piece) {
-        if (square.isValid()){
-            grid[square.file()][square.rank()] = piece;
+        if (!square.isValid()) return;
+
+        Piece oldPiece = grid[square.file()][square.rank()];
+
+        if (oldPiece != null) {
+            getPieces(oldPiece.getColor()).remove(oldPiece);
         }
+
+        grid[square.file()][square.rank()] = piece;
+
+        if (piece != null) {
+            piece.setPosition(square);
+            getPieces(piece.getColor()).add(piece);
+        }
+    }
+
+    public List<Piece> getPieces(PieceColor color) {
+        return (color == PieceColor.WHITE) ? whitePieces : blackPieces;
+    }
+
+    public int calculateScore(PieceColor color) {
+        int score = 0;
+        for (Piece p : getPieces(color)) {
+            score += p.getValue();
+        }
+        return score;
+    }
+
+    public boolean hasAnyLegalMoves(PieceColor color) {
+        for (Piece p : getPieces(color)) {
+            Square pos = p.getPosition();
+            if (!getLegalMovesForPiece(pos).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public Square getEnPassantTarget() {
@@ -73,21 +109,15 @@ public class Board {
     }
 
     public boolean isSquareAttacked(Square target, PieceColor attackerColor) {
-        for (int file = 0; file < 8; file++) {
-            for (int rank = 0; rank < 8; rank++) {
-                Square attackerPos = new Square(file, rank);
-                Piece attacker = getPiece(attackerPos);
-
-                if (attacker != null && attacker.getColor() == attackerColor) {
-                    if (attacker.canMove(this, attackerPos, target)) {
-                        return true;
-                    }
-                }
-
-            }// for rank
-        } //for file
+        for (Piece attacker : getPieces(attackerColor)) {
+            Square attackerPos = attacker.getPosition();
+            if (attacker.canMove(this, attackerPos, target)) {
+                return true;
+            }
+        }
         return false;
     }
+
     public void executeMove(Move move) {
         move.execute();
     }
@@ -95,17 +125,15 @@ public class Board {
     public void undoMove(Move move) {
         move.undo();
     }
+
     /**
      * Находит координаты короля заданного цвета.
      * Нужно для проверки шаха.
      */
     public Square findKing(PieceColor color) {
-        for (int file = 0; file < 8; file++) {
-            for (int rank = 0; rank < 8; rank++) {
-                Piece p = grid[file][rank];
-                if (p instanceof King && p.getColor() == color) {
-                    return new Square(file, rank);
-                }
+        for (Piece p : getPieces(color)) {
+            if (p instanceof King && p.getColor() == color) {
+                return p.getPosition();
             }
         }
         throw new IllegalStateException("King not found! Board is invalid.");
@@ -151,23 +179,11 @@ public class Board {
         }
         return legalMoves;
     }
+
     public GameState checkGameState() {
-        PieceColor current = getMovingColor();
+        PieceColor current = movingColor;
 
-        boolean hasLegalMoves = false;
-
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Piece p = grid[i][j];
-                if (p != null && p.getColor() == current) {
-                    if (!getLegalMovesForPiece(new Square(i, j)).isEmpty()) {
-                        hasLegalMoves = true;
-                        break;
-                    }
-                }
-            }
-            if (hasLegalMoves) break;
-        }
+        boolean hasLegalMoves = hasAnyLegalMoves(movingColor);
 
         Square kingPos = findKing(current);
         boolean isCheck = isSquareAttacked(kingPos, current.getOpposite());

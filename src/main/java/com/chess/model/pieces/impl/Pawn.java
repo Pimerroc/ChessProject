@@ -7,7 +7,7 @@ import com.chess.model.pieces.*;
 import java.util.*;
 
 public class Pawn extends Piece {
-
+    public static int value = 1;
     public Pawn(PieceColor color) {
         super(color);
     }
@@ -84,4 +84,11 @@ public class Pawn extends Piece {
             moves.add(new NormalMove(board, start, end));
         }
     }
+
+    @Override
+    public int getValue() {
+        return value;
+    }
+
+
 }

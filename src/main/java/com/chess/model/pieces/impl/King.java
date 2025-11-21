@@ -7,13 +7,14 @@ import com.chess.model.pieces.*;
 import java.util.*;
 
 public class King extends Piece {
+    public static int value = 100;
     public King(PieceColor color) {
         super(color);
     }
 
     @Override
     public boolean canMove(Board board, Square start, Square end) {
-        if (isMoveInvalid(board, start, end)) return false;
+        if (isTargetSquareInvalid(board, end) || start.equals(end)) return false;
 
         int absDx = Math.abs(start.file() - end.file());
         int absDy = Math.abs(start.rank() - end.rank());
@@ -24,13 +25,9 @@ public class King extends Piece {
     @Override
     public List<Move> getPseudoLegalMoves(Board board, Square start) {
         List<Move> moves = new ArrayList<>();
-
         for (int dx = -1; dx < 2; dx++) {
             for (int dy = -1; dy < 2; dy++) {
                 Square target = new Square(start.file() + dx, start.rank() + dy);
-                if (target.isValid() && isMoveInvalid(board, start, target)) {
-                    moves.add(new NormalMove(board, start, target));
-                }
             }
         }
 
@@ -58,5 +55,10 @@ public class King extends Piece {
                 }
             }
         }
+    }
+
+    @Override
+    public int getValue() {
+        return value;
     }
 }
