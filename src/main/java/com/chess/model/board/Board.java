@@ -2,20 +2,76 @@ package com.chess.model.board;
 
 import com.chess.model.pieces.Piece;
 import com.chess.model.pieces.PieceColor;
+import com.chess.model.pieces.impl.*;
 
 public class Board {
+    private final Piece[][] grid = new Piece[8][8];
+
+    private PieceColor movingColor;
+
+    private Square enPassantTarget;
+
+    public Board() {
+        resetBoard();
+    }
+
+    public void resetBoard() {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                grid[i][j] = null;
+            }
+        }
+        movingColor = PieceColor.WHITE;
+        enPassantTarget = null;
+
+        placeRowOfPawns(1, PieceColor.WHITE);
+        placeMajorPieces(0, PieceColor.WHITE);
+
+        placeRowOfPawns(6, PieceColor.BLACK);
+        placeMajorPieces(7, PieceColor.BLACK);
+    }
+
+    private void placeRowOfPawns(int rank, PieceColor color) {
+        for (int i = 0; i < 8; i++) {
+            setPiece(new Square(i, rank), new Pawn(color));
+        }
+    }
+
+    private void placeMajorPieces(int rank, PieceColor color) {
+        setPiece(new Square(0, rank), new Rook(color));
+        setPiece(new Square(1, rank), new Knight(color));
+        setPiece(new Square(2, rank), new Bishop(color));
+        setPiece(new Square(3, rank), new Queen(color));
+        setPiece(new Square(4, rank), new King(color));
+        setPiece(new Square(5, rank), new Bishop(color));
+        setPiece(new Square(6, rank), new Knight(color));
+        setPiece(new Square(7, rank), new Rook(color));
+    }
+
+
     public Piece getPiece(Square square) {
-        return null;
+        if (!square.isValid()) return null;
+        return grid[square.file()][square.rank()];
+    }
+
+    public void setPiece(Square square, Piece piece) {
+        if (square.isValid()){
+            grid[square.file()][square.rank()] = piece;
+        }
     }
 
     public Square getEnPassantTarget() {
-        return null;
+        return enPassantTarget;
+    }
+
+    public PieceColor getMovingColor() {
+        return movingColor;
     }
 
     public boolean isSquareAttacked(Square target, PieceColor attackerColor) {
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                Square attackerPos = new Square(i, j);
+        for (int file = 0; file < 8; file++) {
+            for (int rank = 0; rank < 8; rank++) {
+                Square attackerPos = new Square(file, rank);
                 Piece attacker = getPiece(attackerPos);
 
                 if (attacker != null && attacker.getColor() == attackerColor) {
@@ -24,8 +80,51 @@ public class Board {
                     }
                 }
 
-            }// for j
-        } //for i
+            }// for rank
+        } //for file
         return false;
+    }
+    public void makeMove(Square start, Square end) {
+        Piece movingPiece = getPiece(start);
+        if (movingPiece == null) return;
+
+        if (movingPiece instanceof Pawn && end.equals(enPassantTarget)) {
+            Square victimSquare = new Square(end.file(), start.rank());
+            setPiece(victimSquare, null);
+        }
+
+        setPiece(end, movingPiece);
+        setPiece(start, null);
+        /* TODO:
+           Добавить превращение пешки в фигуру
+         */
+
+        enPassantTarget = null;
+
+        if (movingPiece instanceof Pawn) {
+            int diff = Math.abs(start.rank() - end.rank());
+            if (diff == 2) {
+                int middleRank = (start.rank() + end.rank()) / 2;
+                enPassantTarget = new Square(start.file(), middleRank);
+            }
+        }
+
+        movingColor = movingColor.getOpposite();
+    }
+
+    /**
+     * Находит координаты короля заданного цвета.
+     * Нужно для проверки шаха.
+     */
+    public Square findKing(PieceColor color) {
+        for (int file = 0; file < 8; file++) {
+            for (int rank = 0; rank < 8; rank++) {
+                Piece p = grid[file][rank];
+                if (p instanceof King && p.getColor() == color) {
+                    return new Square(file, rank);
+                }
+            }
+        }
+        throw new IllegalStateException("King not found! Board is invalid.");
     }
 }

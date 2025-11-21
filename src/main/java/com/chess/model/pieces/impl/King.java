@@ -1,4 +1,4 @@
-package com.chess.model.pieces.piecesImpl;
+package com.chess.model.pieces.impl;
 
 import com.chess.model.board.Board;
 import com.chess.model.board.Square;
