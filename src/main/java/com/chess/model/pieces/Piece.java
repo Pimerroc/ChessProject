@@ -16,8 +16,8 @@ public abstract class Piece {
 
     public abstract boolean canMove(Board board, Square start, Square end);
 
-    protected boolean isTargetSquareValid(Board board, Square end) {
+    protected boolean isTargetSquareInvalid(Board board, Square end) {
         Piece piece = board.getPiece(end);
-        return piece == null || piece.color != this.color;
+        return piece != null && piece.color == this.color;
     }
 }

@@ -2,6 +2,7 @@ package com.chess.model.pieces.piecesImpl;
 
 import com.chess.model.board.Board;
 import com.chess.model.board.Square;
+import com.chess.util.MoveUtil;
 import com.chess.model.pieces.Piece;
 import com.chess.model.pieces.PieceColor;
 
@@ -12,7 +13,7 @@ public class Rook extends Piece {
 
     @Override
     public boolean canMove(Board board, Square start, Square end) {
-        if (!isTargetSquareValid(board, end)) {
+        if (isTargetSquareInvalid(board, end)) {
             return false;
         }
         int dx = start.file() - end.file();
@@ -20,6 +21,6 @@ public class Rook extends Piece {
         
         if (dx != 0 && dy != 0) return false;
     
-        return Util.noOneBlocksThePath(board, start, end);
+        return MoveUtil.noOneBlocksThePath(board, start, end);
     }
 }

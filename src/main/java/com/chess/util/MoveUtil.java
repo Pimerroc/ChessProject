@@ -1,9 +1,9 @@
-package com.chess.model.pieces.piecesImpl;
+package com.chess.util;
 
 import com.chess.model.board.Board;
 import com.chess.model.board.Square;
 
-public class Util {
+public class MoveUtil {
     public static boolean noOneBlocksThePath(Board board, Square start, Square end){
         int xDir = Integer.compare(end.file(), start.file());
         int yDir = Integer.compare(end.rank(), start.rank());

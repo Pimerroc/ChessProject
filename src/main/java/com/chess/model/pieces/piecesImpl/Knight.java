@@ -13,7 +13,7 @@ public class Knight extends Piece {
 
     @Override
     public boolean canMove(Board board, Square start, Square end) {
-        if (!isTargetSquareValid(board, end)){
+        if (isTargetSquareInvalid(board, end) || start.equals(end)){
             return false;
         }
 
