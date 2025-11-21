@@ -18,8 +18,7 @@ class PawnTest {
     @BeforeEach
     void setUp() {
         board = new Board();
-        for(int i=0; i<8; i++) for(int j=0; j<8; j++) board.setPiece(new Square(i,j), null);
-        board.setPiece(new Square(0,0), new King(PieceColor.WHITE));
+        board.setPiece(new Square(0, 0), new King(PieceColor.WHITE));
         board.setPiece(new Square(8, 8), new King(PieceColor.BLACK));
     }
 

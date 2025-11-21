@@ -24,8 +24,8 @@ public class Bishop extends Piece {
             return false;
         }
 
-        int dx = start.file() - end.file();
-        int dy = start.rank() - end.rank();
+        int dx = Math.abs(start.file() - end.file());
+        int dy = Math.abs(start.rank() - end.rank());
         if (dx != dy) {
             return false;
         }

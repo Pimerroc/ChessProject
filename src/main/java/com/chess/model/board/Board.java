@@ -91,8 +91,9 @@ public class Board {
     }
 
     public boolean hasAnyLegalMoves(PieceColor color) {
-        for (Piece p : getPieces(color)) {
-            Square pos = p.getPosition();
+        List<Piece> pieces = new ArrayList<>(getPieces(color));
+        for (Piece piece : pieces) {
+            Square pos = piece.getPosition();
             if (!getLegalMovesForPiece(pos).isEmpty()) {
                 return true;
             }
