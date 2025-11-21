@@ -17,8 +17,6 @@ public class King extends Piece {
         int absDx = Math.abs(start.file() - end.file());
         int absDy = Math.abs(start.rank() - end.rank());
 
-        if (absDx > 1 || absDy > 1) return false;
-
-        return !board.isSquareAttacked(end, this.color);
+        return absDx <= 1 && absDy <= 1;
     }
 }

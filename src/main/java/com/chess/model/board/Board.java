@@ -1,5 +1,6 @@
 package com.chess.model.board;
 
+import com.chess.model.move.Move;
 import com.chess.model.pieces.Piece;
 import com.chess.model.pieces.PieceColor;
 import com.chess.model.pieces.impl.*;
@@ -84,34 +85,13 @@ public class Board {
         } //for file
         return false;
     }
-    public void makeMove(Square start, Square end) {
-        Piece movingPiece = getPiece(start);
-        if (movingPiece == null) return;
-
-        if (movingPiece instanceof Pawn && end.equals(enPassantTarget)) {
-            Square victimSquare = new Square(end.file(), start.rank());
-            setPiece(victimSquare, null);
-        }
-
-        setPiece(end, movingPiece);
-        setPiece(start, null);
-        /* TODO:
-           Добавить превращение пешки в фигуру
-         */
-
-        enPassantTarget = null;
-
-        if (movingPiece instanceof Pawn) {
-            int diff = Math.abs(start.rank() - end.rank());
-            if (diff == 2) {
-                int middleRank = (start.rank() + end.rank()) / 2;
-                enPassantTarget = new Square(start.file(), middleRank);
-            }
-        }
-
-        movingColor = movingColor.getOpposite();
+    public void executeMove(Move move) {
+        move.execute();
     }
 
+    public void undoMove(Move move) {
+        move.undo();
+    }
     /**
      * Находит координаты короля заданного цвета.
      * Нужно для проверки шаха.
@@ -126,5 +106,20 @@ public class Board {
             }
         }
         throw new IllegalStateException("King not found! Board is invalid.");
+    }
+
+    public void updateEnPassantState(Piece movedPiece, Square start, Square end) {
+        enPassantTarget = null;
+        if (movedPiece instanceof Pawn && Math.abs(start.rank() - end.rank()) == 2) {
+            enPassantTarget = new Square(start.file(), (start.rank() + end.rank()) / 2);
+        }
+    }
+
+    public void switchTurn() {
+        movingColor = movingColor.getOpposite();
+    }
+
+    public void setEnPassantTarget(Square sq) {
+        enPassantTarget = sq;
     }
 }
