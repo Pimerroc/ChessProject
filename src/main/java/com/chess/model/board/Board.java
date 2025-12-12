@@ -80,31 +80,27 @@ public class Board {
     return (color == PieceColor.WHITE) ? whitePieces : blackPieces;
   }
 
-  public int calculateScore(PieceColor color) {
-    int score = 0;
-    for (Piece p : getPieces(color)) {
-      score += p.getValue();
-    }
-    return score;
-  }
-
-  public boolean hasAnyLegalMoves(PieceColor color) {
-    List<Piece> pieces = new ArrayList<>(getPieces(color));
-    for (Piece piece : pieces) {
-      Square pos = piece.getPosition();
-      if (!getLegalMovesForPiece(pos).isEmpty()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   public Square getEnPassantTarget() {
     return enPassantTarget;
   }
 
+  public void setEnPassantTarget(Square sq) {
+    enPassantTarget = sq;
+  }
+
+  public void updateEnPassantState(Piece movedPiece, Square start, Square end) {
+    enPassantTarget = null;
+    if (movedPiece instanceof Pawn && Math.abs(start.rank() - end.rank()) == 2) {
+      enPassantTarget = new Square(start.file(), (start.rank() + end.rank()) / 2);
+    }
+  }
+
   public PieceColor getMovingColor() {
     return movingColor;
+  }
+
+  public void switchTurn() {
+    movingColor = movingColor.getOpposite();
   }
 
   public boolean isSquareAttacked(Square target, PieceColor attackerColor) {
@@ -125,7 +121,6 @@ public class Board {
     move.undo();
   }
 
-  /** Находит координаты короля заданного цвета. Нужно для проверки шаха. */
   public Square findKing(PieceColor color) {
     for (Piece p : getPieces(color)) {
       if (p instanceof King && p.getColor() == color) {
@@ -135,24 +130,17 @@ public class Board {
     throw new IllegalStateException("King not found! Board is invalid.");
   }
 
-  public void updateEnPassantState(Piece movedPiece, Square start, Square end) {
-    enPassantTarget = null;
-    if (movedPiece instanceof Pawn && Math.abs(start.rank() - end.rank()) == 2) {
-      enPassantTarget = new Square(start.file(), (start.rank() + end.rank()) / 2);
+  public boolean hasAnyLegalMoves(PieceColor color) {
+    List<Piece> pieces = new ArrayList<>(getPieces(color));
+    for (Piece piece : pieces) {
+      Square pos = piece.getPosition();
+      if (!getLegalMovesForPiece(pos).isEmpty()) {
+        return true;
+      }
     }
+    return false;
   }
 
-  public void switchTurn() {
-    movingColor = movingColor.getOpposite();
-  }
-
-  public void setEnPassantTarget(Square sq) {
-    enPassantTarget = sq;
-  }
-
-  /**
-   * ГЛАВНЫЙ МЕТОД ЛОГИКИ. Возвращает только те ходы, которые разрешены правилами (нет шаха королю).
-   */
   public List<Move> getLegalMovesForPiece(Square square) {
     Piece piece = getPiece(square);
     if (piece == null) return Collections.emptyList();
@@ -193,5 +181,13 @@ public class Board {
       return GameState.CHECK;
     }
     return GameState.PLAYING;
+  }
+
+  public int calculateScore(PieceColor color) {
+    int score = 0;
+    for (Piece p : getPieces(color)) {
+      score += p.getValue();
+    }
+    return score;
   }
 }
