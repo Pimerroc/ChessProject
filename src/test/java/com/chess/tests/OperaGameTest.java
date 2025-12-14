@@ -2,22 +2,24 @@ package com.chess.tests;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.chess.controller.GameController;
 import com.chess.model.GameState;
 import com.chess.model.board.Board;
 import com.chess.model.board.Square;
-import com.chess.model.move.Move;
 import com.chess.model.pieces.Piece;
 import com.chess.model.pieces.impl.Rook;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class OperaGameTest {
   private Board board;
+  private GameController gameController;
 
   @BeforeEach
   void setUp() {
     board = new Board();
+    gameController = new GameController(board);
+    gameController.newGame();
   }
 
   @Test
@@ -106,22 +108,7 @@ class OperaGameTest {
   private void play(String from, String to) {
     Square start = sq(from);
     Square end = sq(to);
-
-    List<Move> legalMoves = board.getLegalMovesForPiece(start);
-
-    Move move = legalMoves.stream().filter(m -> m.getEnd().equals(end)).findFirst().orElse(null);
-
-    if (move == null) {
-      fail(
-          "Ход "
-              + from
-              + "-"
-              + to
-              + " считается нелегальным! Доступные ходы: "
-              + legalMoves.stream().map(m -> m.getEnd().toString()).toList());
-    }
-
-    move.execute();
+    gameController.performMove(start, end);
   }
 
   /** Парсит строку типа "e2" в объект Square(4, 1). */

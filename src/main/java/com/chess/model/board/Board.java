@@ -22,6 +22,8 @@ public class Board {
   }
 
   public void resetBoard() {
+    whitePieces.clear();
+    blackPieces.clear();
     for (int i = 0; i < 8; i++) {
       for (int j = 0; j < 8; j++) {
         grid[i][j] = null;

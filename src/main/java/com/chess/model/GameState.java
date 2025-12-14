@@ -4,5 +4,9 @@ public enum GameState {
   PLAYING,
   CHECK,
   CHECKMATE,
-  STALEMATE
+  STALEMATE;
+
+  public boolean isGameOver() {
+    return this == CHECKMATE || this == STALEMATE;
+  }
 }
