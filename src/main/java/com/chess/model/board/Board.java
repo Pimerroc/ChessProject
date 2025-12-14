@@ -115,14 +115,6 @@ public class Board {
     return false;
   }
 
-  public void executeMove(Move move) {
-    move.execute();
-  }
-
-  public void undoMove(Move move) {
-    move.undo();
-  }
-
   public Square findKing(PieceColor color) {
     for (Piece p : getPieces(color)) {
       if (p instanceof King && p.getColor() == color) {

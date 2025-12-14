@@ -23,9 +23,11 @@ public class CastlingMove extends Move {
 
     board.setPiece(end, movedPiece);
     board.setPiece(start, null);
+    movedPiece.setHasMoved(true);
 
     board.setPiece(rookEnd, rook);
     board.setPiece(rookStart, null);
+    rook.setHasMoved(true);
 
     board.setEnPassantTarget(null);
     board.switchTurn();
@@ -35,9 +37,11 @@ public class CastlingMove extends Move {
   public void undo() {
     board.setPiece(start, movedPiece);
     board.setPiece(end, null);
+    movedPiece.setHasMoved(oldHasMovedState);
 
     board.setPiece(rookStart, rook);
     board.setPiece(rookEnd, null);
+    rook.setHasMoved(false);
 
     board.setEnPassantTarget(oldEnPassantTarget);
     board.switchTurn();
