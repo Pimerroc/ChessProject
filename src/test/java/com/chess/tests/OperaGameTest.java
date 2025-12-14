@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import com.chess.controller.GameController;
 import com.chess.model.GameState;
-import com.chess.model.board.Board;
 import com.chess.model.board.Square;
 import com.chess.model.pieces.Piece;
 import com.chess.model.pieces.impl.Rook;
@@ -12,14 +11,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 class OperaGameTest {
-  private Board board;
   private GameController gameController;
 
   @BeforeEach
   void setUp() {
-    board = new Board();
-    gameController = new GameController(board);
-    gameController.newGame();
+    gameController = new GameController();
   }
 
   @Test
@@ -66,12 +62,12 @@ class OperaGameTest {
 
     // 11. Bxb5+ Nbd7
     play("c4", "b5");
-    assertEquals(GameState.CHECK, board.checkGameState(), "На 11 ходу должен быть Шах черным");
+    assertEquals(GameState.CHECK, gameController.getBoard().checkGameState(), "На 11 ходу должен быть Шах черным");
     play("b8", "d7");
 
     // 12. O-O-O (Длинная рокировка) Rd8
     play("e1", "c1");
-    Piece rook = board.getPiece(sq("d1"));
+    Piece rook = gameController.getBoard().getPiece(sq("d1"));
     assertNotNull(rook, "Ладья должна быть на d1 после длинной рокировки");
     assertInstanceOf(Rook.class, rook);
     play("a8", "d8");
@@ -95,7 +91,7 @@ class OperaGameTest {
     // 17. Rd8# (Мат)
     play("d1", "d8");
 
-    GameState state = board.checkGameState();
+    GameState state = gameController.getBoard().checkGameState();
     assertEquals(GameState.CHECKMATE, state, "Партия должна закончиться матом");
 
     System.out.println("Тест пройден! Пол Морфи победил.");

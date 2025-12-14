@@ -9,8 +9,8 @@ import java.util.List;
 public class GameController {
   private final Board board;
 
-  public GameController(Board board) {
-    this.board = board;
+  public GameController() {
+    this.board = new Board();
   }
 
   public Board getBoard() {
