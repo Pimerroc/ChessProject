@@ -1,28 +1,28 @@
 package com.chess;
 
+import com.chess.controller.GameController;
+import com.chess.view.GameWindow;
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
-    @Override
-    public void start(Stage stage) {
-        String javaVersion = System.getProperty("java.version");
-        String javafxVersion = System.getProperty("javafx.version");
-        
-        Label l = new Label("Hello, JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".");
-        
-        Scene scene = new Scene(new StackPane(l), 640, 480);
-        
-        stage.setScene(scene);
-        stage.setTitle("Chess Game Beta");
-        stage.show();
-    }
+  @Override
+  public void start(Stage stage) {
+    GameController gameController = new GameController();
 
-    public static void main(String[] args) {
-        launch();
-    }
+    GameWindow gameWindow = new GameWindow(gameController);
+
+    Scene scene = new Scene(gameWindow, 640, 640);
+
+    stage.setScene(scene);
+    stage.setTitle("Chess Game Beta");
+    stage.setResizable(false);
+    stage.show();
+  }
+
+  public static void main(String[] args) {
+    launch();
+  }
 }
