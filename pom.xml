@@ -6,14 +6,14 @@
 
     <groupId>com.chess</groupId>
     <artifactId>chess-game</artifactId>
-    <version>0.alfa</version>
+    <version>0.beta</version>
 
     <properties>
         <project.built.sourceEncoding>UTF-8</project.built.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
-        <javafx.version>17.0.6</javafx.version>
+        <javafx.version>0.0.8</javafx.version>
         <junit.version>5.9.2</junit.version>
     </properties>
     <dependencies>
@@ -23,5 +23,22 @@
             <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <version>25</version>
+        </dependency>
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>com.chess.Main</mainClass> 
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
