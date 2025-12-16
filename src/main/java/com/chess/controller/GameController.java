@@ -3,6 +3,7 @@ package com.chess.controller;
 import com.chess.model.board.Board;
 import com.chess.model.board.Square;
 import com.chess.model.move.Move;
+import com.chess.model.move.PromotionMove;
 import com.chess.model.pieces.Piece;
 import java.util.List;
 
@@ -42,5 +43,31 @@ public class GameController {
     }
 
     move.execute();
+  }
+  public void performPromotionMove(Square start, Square end, Piece tPiece){
+    PromotionMove move = new PromotionMove(board, start, end, tPiece);
+    move.execute();
+  }
+  public boolean validateMove(Square start, Square end){
+    Piece piece = board.getPiece(start);
+    if (piece == null || piece.getColor() != board.getMovingColor()) {
+      return false;
+    }
+
+    List<Move> legalMoves = board.getLegalMovesForPiece(start);
+
+    Move move = null; 
+
+    for (Move mv : legalMoves) {
+      if (mv.getEnd().equals(end)) { 
+        move = mv;
+        break; 
+      }
+    }
+    if (move == null) {
+      return false;
+    }
+
+    return true;
   }
 }

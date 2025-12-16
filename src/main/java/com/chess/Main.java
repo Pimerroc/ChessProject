@@ -15,10 +15,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
-import java.awt.Window;
-
 import org.controlsfx.control.ToggleSwitch;
+
+import com.chess.controller.GameController;
+import com.chess.view.GameWindow;
 
 public class Main extends Application {
   private static final int WIDTH = 800;
@@ -27,8 +27,9 @@ public class Main extends Application {
   @Override
   public void start(Stage stage) {
     Scene scene = createMenuScene(stage);
-
-    stage.setScene(scene);
+    GameController gameController = new GameController();
+    GameWindow gameWindow = new GameWindow(gameController);
+    stage.setScene(new Scene(gameWindow, 800, 800));
     stage.setFullScreen(true);
     stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
     stage.setFullScreenExitHint("");
