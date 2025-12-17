@@ -6,32 +6,29 @@ import com.chess.model.board.Square;
 import com.chess.model.move.Move;
 import com.chess.model.pieces.Piece;
 import com.chess.model.pieces.PieceColor;
-import com.chess.model.pieces.impl.Bishop;
-import com.chess.model.pieces.impl.Knight;
 import com.chess.model.pieces.impl.Pawn;
-import com.chess.model.pieces.impl.Queen;
-import com.chess.model.pieces.impl.Rook;
 import com.chess.util.ResourceManager;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Modality;
-import javafx.stage.StageStyle;
 
 public class BoardView extends GridPane {
 
+  public interface OnPromotionListener {
+    void onPromotionRequired(Square from, Square to, PieceColor color);
+  }
+
+  private OnPromotionListener promotionListener;
   private final GameController controller;
   private final CellView[][] cells = new CellView[8][8];
   private Square selectedSquare = null;
   private Piece selectedPiece = null;
   private final ResourceManager resourceManager = new ResourceManager();
+  private PieceColor currentPerspective = PieceColor.WHITE;
+
+  public void setPromotionListener(OnPromotionListener listener) {
+    this.promotionListener = listener;
+  }
 
   public BoardView(GameController controller) {
     this.controller = controller;
@@ -39,24 +36,47 @@ public class BoardView extends GridPane {
     refresh();
   }
 
-  private void createBoard() {
-    for (int rank = 7; rank >= 0; rank--) {
-      for (int file = 0; file < 8; file++) {
+  public void setPerspective(PieceColor color) {
+    this.currentPerspective = color;
+    createBoard();
+  }
 
-        boolean isLight = (file + rank) % 2 != 0;
+  public void flipBoard() {
+    setPerspective(currentPerspective == PieceColor.WHITE ? PieceColor.BLACK : PieceColor.WHITE);
+  }
+
+  private void createBoard() {
+    this.getChildren().clear();
+
+    boolean isWhiteBottom = (currentPerspective == PieceColor.WHITE);
+
+    for (int row = 0; row < 8; row++) {
+      for (int col = 0; col < 8; col++) {
+
+        int logicalRank = isWhiteBottom ? (7 - row) : row;
+        int logicalFile = isWhiteBottom ? col : (7 - col);
+        boolean isLight = (logicalRank + logicalFile) % 2 != 0;
         Color color = isLight ? Color.BEIGE : Color.SADDLEBROWN;
 
         CellView cell = new CellView(color);
 
-        int f = file;
-        int r = rank;
-        cell.setOnMouseClicked(e -> handleSquareClick(f, r));
+        cell.setOnMouseClicked(e -> handleSquareClick(logicalFile, logicalRank));
 
-        cells[file][rank] = cell;
+        cells[logicalFile][logicalRank] = cell;
 
-        add(cell, file, 7 - rank);
+        if (col == 0) {
+          String rankText = String.valueOf(logicalRank + 1);
+          cell.addCoordinateOverlay(rankText, true, isLight);
+        }
+        if (row == 7) {
+          char fileText = (char) ('a' + logicalFile);
+          cell.addCoordinateOverlay(String.valueOf(fileText), false, isLight);
+        }
+
+        this.add(cell, col, row);
       }
     }
+    refresh();
   }
 
   private void handleSquareClick(int file, int rank) {
@@ -68,7 +88,7 @@ public class BoardView extends GridPane {
 
     if (clickedPiece != null && clickedPiece.getColor() == board.getMovingColor()) {
       selectedSquare = clickedSquare;
-      selectedPiece = board.getPiece(selectedSquare); 
+      selectedPiece = board.getPiece(selectedSquare);
       highlightLegalMoves(clickedSquare);
       cells[file][rank].highlightBackground();
       return;
@@ -77,9 +97,9 @@ public class BoardView extends GridPane {
     if (selectedSquare != null) {
       if ((selectedPiece instanceof Pawn)
           && (clickedSquare.rank() == 0 || clickedSquare.rank() == 7)) {
-        if (controller.validateMove(selectedSquare, clickedSquare)) {
-          controller.performPromotionMove(
-              selectedSquare, clickedSquare, showPromotionDialog(selectedPiece.getColor()));
+        if (controller.validateMove(selectedSquare, clickedSquare) && promotionListener != null) {
+          promotionListener.onPromotionRequired(
+              selectedSquare, clickedSquare, selectedPiece.getColor());
         }
       } else {
         controller.performMove(selectedSquare, clickedSquare);
@@ -87,54 +107,6 @@ public class BoardView extends GridPane {
       selectedSquare = null;
       refresh();
     }
-  }
-
-  private Piece showPromotionDialog(PieceColor pieceColor) {
-    Dialog<Piece> dialog = new Dialog<>();
-    dialog.setTitle("Promote");
-    dialog.setHeaderText(null);
-
-    dialog.initStyle(StageStyle.UTILITY);
-    dialog.initModality(Modality.APPLICATION_MODAL);
-
-    HBox box = new HBox(10);
-    box.setStyle("-fx-padding: 20; -fx-alignment: center;");
-
-    List<Piece> pieces = new ArrayList<>();
-    pieces.add(new Knight(pieceColor));
-    pieces.add(new Bishop(pieceColor));
-    pieces.add(new Rook(pieceColor));
-    pieces.add(new Queen(pieceColor));
-
-    for (Piece p : pieces) {
-      ImageView view = new ImageView(resourceManager.getImage(p));
-      view.setFitWidth(60);
-      view.setFitHeight(60);
-
-      Button btn = new Button();
-      btn.setGraphic(view);
-
-      btn.setStyle("-fx-background-color: transparent; -fx-cursor: hand;");
-
-      btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #cccccc; -fx-cursor: hand;"));
-      btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: transparent;"));
-
-      btn.setOnAction(
-          e -> {
-            dialog.setResult(p);
-            dialog.close();
-          });
-
-      box.getChildren().add(btn);
-    }
-
-    dialog.getDialogPane().setContent(box);
-
-    dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-    dialog.getDialogPane().lookupButton(ButtonType.CANCEL).setVisible(false);
-
-    Optional<Piece> result = dialog.showAndWait();
-    return result.orElse(new Queen(pieceColor));
   }
 
   public void refresh() {

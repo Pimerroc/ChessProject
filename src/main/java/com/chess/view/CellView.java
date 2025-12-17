@@ -2,14 +2,21 @@ package com.chess.view;
 
 import com.chess.model.pieces.Piece;
 import com.chess.util.ResourceManager;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 public class CellView extends StackPane {
-
+  // its better to just do this rn, im not in the mood to do color theme's
+  private static final Color TEXT_COLOR_LIGHT = Color.BEIGE;
+  private static final Color TEXT_COLOR_DARK = Color.SADDLEBROWN;
   private final Rectangle background;
   private final ImageView imageView;
   private final Circle moveMarker;
@@ -31,6 +38,25 @@ public class CellView extends StackPane {
     this.moveMarker.setMouseTransparent(true);
 
     getChildren().addAll(background, imageView, moveMarker);
+  }
+
+  public void addCoordinateOverlay(String text, boolean isTopLeft, boolean isLightSquared) {
+    Label label = new Label(text);
+
+    label.setFont(Font.font("Segoe UI", FontWeight.BOLD, 16));
+
+    Color textColor = isLightSquared ? TEXT_COLOR_DARK : TEXT_COLOR_LIGHT;
+    label.setTextFill(textColor);
+
+    label.setPadding(new Insets(2, 4, 2, 4));
+
+    if (isTopLeft) {
+      StackPane.setAlignment(label, Pos.TOP_LEFT);
+    } else {
+      StackPane.setAlignment(label, Pos.BOTTOM_RIGHT);
+    }
+
+    this.getChildren().add(label);
   }
 
   public void setPiece(Piece piece, ResourceManager resources) {
