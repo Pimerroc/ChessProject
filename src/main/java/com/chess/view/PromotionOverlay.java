@@ -1,20 +1,35 @@
-/*
-  private Piece showPromotionDialog(PieceColor pieceColor) {
-    Dialog<Piece> dialog = new Dialog<>();
-    dialog.setTitle("Promote");
-    dialog.setHeaderText(null);
+package com.chess.view;
 
-    dialog.initStyle(StageStyle.UTILITY);
-    dialog.initModality(Modality.APPLICATION_MODAL);
+import java.util.function.Consumer;
 
-    HBox box = new HBox(10);
-    box.setStyle("-fx-padding: 20; -fx-alignment: center;");
+import com.chess.model.pieces.Piece;
+import com.chess.model.pieces.PieceColor;
+import com.chess.model.pieces.impl.Bishop;
+import com.chess.model.pieces.impl.Knight;
+import com.chess.model.pieces.impl.Queen;
+import com.chess.model.pieces.impl.Rook;
+import com.chess.util.ResourceManager;
 
-    List<Piece> pieces = new ArrayList<>();
-    pieces.add(new Knight(pieceColor));
-    pieces.add(new Bishop(pieceColor));
-    pieces.add(new Rook(pieceColor));
-    pieces.add(new Queen(pieceColor));
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+
+public class PromotionOverlay extends HBox {
+  
+  private final ResourceManager resourceManager = new ResourceManager();
+
+  public PromotionOverlay(){
+    this.setAlignment(Pos.CENTER);
+    this.setSpacing(20);
+    this.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
+    this.setVisible(false);
+
+    this.setOnMouseClicked(e -> e.consume());
+  }
+
+  void showPromotionOverlay(PieceColor color, Consumer<Piece> onPieceSelected) {
+    Piece[] pieces = {new Queen(color), new Rook(color), new Bishop(color), new Knight(color)};
 
     for (Piece p : pieces) {
       ImageView view = new ImageView(resourceManager.getImage(p));
@@ -31,19 +46,12 @@
 
       btn.setOnAction(
           e -> {
-            dialog.setResult(p);
-            dialog.close();
+            this.setVisible(false);
+            onPieceSelected.accept(p);
           });
 
-      box.getChildren().add(btn);
+      this.getChildren().add(btn);
     }
-
-    dialog.getDialogPane().setContent(box);
-
-    dialog.getDialogPane().getButtonTypes().add(ButtonType.CANCEL);
-    dialog.getDialogPane().lookupButton(ButtonType.CANCEL).setVisible(false);
-
-    Optional<Piece> result = dialog.showAndWait();
-    return result.orElse(new Queen(pieceColor));
+    this.setVisible(true);
   }
-  */
+}

@@ -2,84 +2,61 @@ package com.chess.view;
 
 import com.chess.controller.GameController;
 import com.chess.model.board.Square;
-import com.chess.model.pieces.Piece;
-import com.chess.model.pieces.PieceColor;
-import com.chess.model.pieces.impl.Bishop;
-import com.chess.model.pieces.impl.Knight;
-import com.chess.model.pieces.impl.Queen;
-import com.chess.model.pieces.impl.Rook;
-import com.chess.util.ResourceManager;
-
 import javafx.geometry.Pos;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Button;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.control.Button;
+
 public class GameWindow extends StackPane {
 
-  private final GameController controller;
+  private final PromotionOverlay promotionOverlay;
   private final BoardView boardView;
-  private final HBox promotionOverlay;
-  private final ResourceManager resourceManager = new ResourceManager();
 
-  private Square from;
-  private Square to;
+  private Square promotionMoveFrom;
+  private Square promotinMoveTo;
+
   public GameWindow(GameController controller) {
-    this.controller = controller;
     this.boardView = new BoardView(controller);
+    this.promotionOverlay = new PromotionOverlay();
 
-    promotionOverlay = createPromotionOverlay();
-    
     boardView.setPromotionListener(
-      (from, to, color) -> {
-        this.from = from;
-        this.to = to;
-        showPromotionOverlay(color);
-      }
-          
-    );      
-    
+        (from, to, color) -> {
+          this.promotionMoveFrom = from;
+          this.promotinMoveTo = to;
+          promotionOverlay.showPromotionOverlay(
+              color,
+              (chosenPiece) -> {
+                controller.performPromotionMove(promotionMoveFrom, promotinMoveTo, chosenPiece);
+                boardView.refresh();
+              });
+        });
+
     boardView.setAlignment(Pos.CENTER);
-    this.getChildren().addAll(boardView, promotionOverlay);
+
+    BorderPane gameLayer = new BorderPane();
+
+    HBox boardContainer = new HBox(boardView);
+
+    boardContainer.setAlignment(Pos.CENTER);
+    gameLayer.setCenter(boardContainer);
+    gameLayer.setTop(createOptionPanel());
+
+    this.getChildren().addAll(gameLayer, promotionOverlay);
   }
 
-  private HBox createPromotionOverlay() {
-    HBox overlay = new HBox(20);
+  private HBox createOptionPanel() {
+    HBox bottomBar = new HBox(10);
+    bottomBar.setStyle("-fx-padding: 15; -fx-background-color:  #754b06 ; -fx-alignment: left;");
 
-    overlay.setAlignment(Pos.CENTER);
-    overlay.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7);");
-    overlay.setVisible(false);
-
-    return overlay;
-  }
-
-  private void showPromotionOverlay(PieceColor color) {
-    Piece[] pieces = {new Queen(color), new Rook(color), new Bishop(color), new Knight(color)};
-
-    for (Piece p : pieces) {
-      ImageView view = new ImageView(resourceManager.getImage(p));
-      view.setFitWidth(60);
-      view.setFitHeight(60);
-
-      Button btn = new Button();
-      btn.setGraphic(view);
-
-      btn.setStyle("-fx-background-color: rgba(0, 0, 0, 0.7); -fx-cursor: hand;");
-
-      btn.setOnMouseEntered(e -> btn.setStyle("-fx-background-color: #cccccc; -fx-cursor: hand;"));
-      btn.setOnMouseExited(e -> btn.setStyle("-fx-background-color: transparent;"));
-
-      btn.setOnAction(
-          e -> {
-            controller.performPromotionMove(from, to, p);
-
-            promotionOverlay.setVisible(false);
-
-            boardView.refresh();
-          });
-
-      promotionOverlay.getChildren().add(btn);
-    }
-    promotionOverlay.setVisible(true);
+    Button saveBtn = new Button("Save Game");
+    Button flipBtn = new Button("Flip Board");
+    Button exitBtn = new Button("Exit to Menu");
+    flipBtn.setOnAction(
+        e -> {
+          boardView.flipBoard();
+        });
+    bottomBar.getChildren().addAll(saveBtn, flipBtn, exitBtn);
+    return bottomBar;
   }
 }
