@@ -1,5 +1,7 @@
 package com.chess;
 
+import com.chess.controller.GameController;
+import com.chess.view.GameWindow;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -16,9 +18,6 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.controlsfx.control.ToggleSwitch;
-
-import com.chess.controller.GameController;
-import com.chess.view.GameWindow;
 
 public class Main extends Application {
   private static final int WIDTH = 800;
@@ -75,16 +74,11 @@ public class Main extends Application {
     Button btn = defaultButton(text);
 
     String normalStyle =
-        "-fx-background-color: #664933; "
-            + "-fx-text-fill: white; "
-            + "-fx-background-radius: 10; "
-            + "-fx-cursor: hand;";
-
+        "-fx-background-color: #664933; -fx-text-fill: white; -fx-background-radius: 10;"
+            + " -fx-cursor: hand;";
     String hoverStyle =
-        "-fx-background-color: #855e42; "
-            + "-fx-text-fill: white; "
-            + "-fx-background-radius: 10; "
-            + "-fx-cursor: hand;";
+        "-fx-background-color: #855e42; -fx-text-fill: white; -fx-background-radius: 10;"
+            + " -fx-cursor: hand;";
 
     btn.setStyle(normalStyle);
 

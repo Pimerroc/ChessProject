@@ -14,10 +14,17 @@ import javafx.scene.paint.Color;
 
 public class BoardView extends GridPane {
 
+  @FunctionalInterface
   public interface OnPromotionListener {
     void onPromotionRequired(Square from, Square to, PieceColor color);
   }
 
+  @FunctionalInterface
+  public interface OnMoveCompletedListener {
+    void checkGameState();
+  }
+
+  private OnMoveCompletedListener onMoveCompletedListener;
   private OnPromotionListener promotionListener;
   private final GameController controller;
   private final CellView[][] cells = new CellView[8][8];
@@ -25,6 +32,10 @@ public class BoardView extends GridPane {
   private Piece selectedPiece = null;
   private final ResourceManager resourceManager = new ResourceManager();
   private PieceColor currentPerspective = PieceColor.WHITE;
+
+  public void setOnMoveCompletedListener(OnMoveCompletedListener listener) {
+    this.onMoveCompletedListener = listener;
+  }
 
   public void setPromotionListener(OnPromotionListener listener) {
     this.promotionListener = listener;
@@ -103,6 +114,7 @@ public class BoardView extends GridPane {
         }
       } else {
         controller.performMove(selectedSquare, clickedSquare);
+        onMoveCompletedListener.checkGameState();
       }
       selectedSquare = null;
       refresh();
