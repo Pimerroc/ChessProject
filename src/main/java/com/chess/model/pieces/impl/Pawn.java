@@ -16,8 +16,8 @@ public class Pawn extends Piece {
   public boolean canMove(Board board, Square start, Square end) {
     if (start.equals(end)) return false;
     int direction = (color == PieceColor.WHITE) ? 1 : -1;
-    int dx = start.file() - end.file();
-    int dy = start.rank() - end.rank();
+    int dx = end.file() - start.file();
+    int dy = end.rank() - start.rank() ;
     int diffX = Math.abs(dx);
     int diffY = Math.abs(dy);
 
