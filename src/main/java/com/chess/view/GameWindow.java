@@ -5,6 +5,8 @@ import com.chess.model.GameState;
 import com.chess.model.board.Board;
 import com.chess.model.board.Square;
 import com.chess.model.pieces.PieceColor;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
@@ -32,6 +34,10 @@ public class GameWindow extends StackPane {
     this.exitButtonListener = listener;
   }
 
+  public void loadGame(String fen){
+    controller.loadGameFromFEN(fen);
+  }
+
   public GameWindow(GameController controller, SettingsOverlay settingsOverlay) {
     this.controller = controller;
     this.settingsOverlay = settingsOverlay;
@@ -44,6 +50,7 @@ public class GameWindow extends StackPane {
               restartGame();
             },
             e -> {
+              deleteSave();
               exitButtonListener.leaveBackToMenu();
             });
     boardView.setPromotionListener(
@@ -74,14 +81,13 @@ public class GameWindow extends StackPane {
     gameLayer.setCenter(boardContainer);
     gameLayer.setTop(createOptionPanel());
 
-    this.getChildren().addAll(gameLayer, promotionOverlay, gameOverOverlay, settingsOverlay);
+    this.getChildren().setAll(gameLayer, promotionOverlay, gameOverOverlay, settingsOverlay);
   }
 
   private HBox createOptionPanel() {
     HBox bottomBar = new HBox(10);
     bottomBar.setStyle("-fx-padding: 15; -fx-background-color:  #754b06 ; -fx-alignment: center;");
 
-    Button saveBtn = createStyledButton("Save Game");
     Button settingsBtn = createStyledButton("Settings");
     Button flipBtn = createStyledButton("Flip Board");
     Button exitBtn = createStyledButton("Exit to Menu");
@@ -95,9 +101,10 @@ public class GameWindow extends StackPane {
         });
     exitBtn.setOnAction(
         e -> {
+          saveFENToFile();
           exitButtonListener.leaveBackToMenu();
         });
-    bottomBar.getChildren().addAll(saveBtn, settingsBtn, flipBtn, exitBtn);
+    bottomBar.getChildren().addAll(settingsBtn, flipBtn, exitBtn);
     return bottomBar;
   }
 
@@ -128,12 +135,29 @@ public class GameWindow extends StackPane {
         } else {
           gameOverOverlay.showGameOver("CHECKMATE", "White wins!");
         }
+        deleteSave();
         break;
       case STALEMATE:
         gameOverOverlay.showGameOver("DRAW", "Stealmate");
+        deleteSave();
         break;
       default:
         break;
+    }
+  }
+
+  private void saveFENToFile() {
+    try {
+      Files.writeString(Path.of("/home/max/IdeaProjects/ChessProject/src/main/java/com/chess/chess_safe.fen"), controller.getGameFEN());
+    } catch (Exception e) {
+    }
+  }
+
+  private void deleteSave() {
+    try {
+      Files.deleteIfExists(Path.of("/home/max/IdeaProjects/ChessProject/src/main/java/com/chess/chess_safe.fen"));
+    } catch (Exception e) {
+
     }
   }
 

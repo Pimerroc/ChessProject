@@ -4,6 +4,8 @@ import com.chess.controller.GameController;
 import com.chess.util.UIUtil;
 import com.chess.view.GameWindow;
 import com.chess.view.SettingsOverlay;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -50,22 +52,17 @@ public class Main extends Application {
     titleLabel.setFont(Font.font("Segoe UI", FontWeight.BOLD, 50));
     titleLabel.setEffect(new DropShadow(10, Color.BLACK));
 
+    Button continueButton = UIUtil.createStyledButtonForMainMenu("Continue");
     Button startButton = UIUtil.createStyledButtonForMainMenu("New Game");
-    // TODO: if (save is not empty){ Button continueButton = createStyledButton("Continue"); }
     Button settingsButton = UIUtil.createStyledButtonForMainMenu("Settings");
     Button exitButton = UIUtil.createStyledButtonForMainMenu("Exit");
+    Path savePath =
+        Path.of("/home/max/IdeaProjects/ChessProject/src/main/java/com/chess/chess_safe.fen");
+    boolean hasSave = Files.exists(savePath);
 
     startButton.setOnAction(
         e -> {
-          GameController gameController = new GameController();
-          GameWindow gameWindow = new GameWindow(gameController, settingsOverlay);
-          boolean isFullScreen = stage.isFullScreen();
-          gameWindow.setButtonListener(
-              () -> {
-                createMenuScene(stage);
-              });
-          stage.setTitle("Playing");
-          contentLayer.getChildren().setAll(gameWindow);
+          runGameWithData(stage, null);
         });
     settingsButton.setOnAction(
         e -> {
@@ -77,10 +74,48 @@ public class Main extends Application {
           Platform.exit();
         });
 
-    layout
-        .getChildren()
-        .addAll(titleLabel, createSpacer(20), startButton, settingsButton, exitButton);
+    if (hasSave) {
+      continueButton.setDisable(false);
+      continueButton.setOnAction(
+          e -> {
+            try {
+              String fen = Files.readString(savePath);
+              runGameWithData(stage, fen);
+            } catch (Exception ex) {
+              ex.printStackTrace();
+            }
+          });
+
+      layout
+          .getChildren()
+          .addAll(
+              titleLabel,
+              createSpacer(20),
+              continueButton,
+              startButton,
+              settingsButton,
+              exitButton);
+    } else {
+      layout
+          .getChildren()
+          .addAll(titleLabel, createSpacer(20), startButton, settingsButton, exitButton);
+    }
     contentLayer.getChildren().setAll(layout, settingsOverlay);
+  }
+
+  private void runGameWithData(Stage stage, String fen) {
+    GameController gameController = new GameController();
+    if (fen != null) {
+      gameController.loadGameFromFEN(fen);
+    }
+    GameWindow gameWindow = new GameWindow(gameController, settingsOverlay);
+    boolean isFullScreen = stage.isFullScreen();
+    gameWindow.setButtonListener(
+        () -> {
+          createMenuScene(stage);
+        });
+    stage.setTitle("Playing");
+    contentLayer.getChildren().setAll(gameWindow);
   }
 
   private Region createSpacer(double height) {
