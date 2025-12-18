@@ -49,7 +49,7 @@ public class GameWindow extends StackPane {
           checkGameStatus();
         });
     boardView.setAlignment(Pos.CENTER);
-    this.setStyle("-fx-background-color: #754b06");
+    this.setStyle("-fx-background-color: #997950");
     BorderPane gameLayer = new BorderPane();
 
     HBox boardContainer = new HBox(boardView);
@@ -63,17 +63,33 @@ public class GameWindow extends StackPane {
 
   private HBox createOptionPanel() {
     HBox bottomBar = new HBox(10);
-    bottomBar.setStyle("-fx-padding: 15; -fx-background-color:  #754b06 ; -fx-alignment: left;");
+    bottomBar.setStyle("-fx-padding: 15; -fx-background-color:  #754b06 ; -fx-alignment: center;");
 
-    Button saveBtn = new Button("Save Game");
-    Button flipBtn = new Button("Flip Board");
-    Button exitBtn = new Button("Exit to Menu");
+    Button saveBtn = createStyledButton("Save Game");
+    Button flipBtn = createStyledButton("Flip Board");
+    Button exitBtn = createStyledButton("Exit to Menu");
     flipBtn.setOnAction(
         e -> {
           boardView.flipBoard();
         });
     bottomBar.getChildren().addAll(saveBtn, flipBtn, exitBtn);
     return bottomBar;
+  }
+
+  private Button createStyledButton(String text) {
+    Button btn = new Button(text);
+    btn.setPrefWidth(250);
+    btn.setPrefHeight(40);
+    String normalStyle =
+        "-fx-background-color: #cccccc; -fx-text-fill: black; -fx-font-size: 16px; -fx-cursor:"
+            + " hand;";
+    String hoverStyle = 
+        "-fx-background-color: #ffa617; -fx-text-fill: black; -fx-font-size: 16px; -fx-cursor:"
+            + " hand;";
+    btn.setStyle(normalStyle);
+    btn.setOnMouseEntered(e -> btn.setStyle(hoverStyle));
+    btn.setOnMouseExited(e -> btn.setStyle(normalStyle));
+    return btn;
   }
 
   private void checkGameStatus() {
