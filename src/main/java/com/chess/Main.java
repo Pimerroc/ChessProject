@@ -1,6 +1,8 @@
 package com.chess;
 
+import com.chess.controller.GameController;
 import com.chess.util.UIUtil;
+import com.chess.view.GameWindow;
 import com.chess.view.SettingsOverlay;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -22,22 +24,23 @@ public class Main extends Application {
   private static final int WIDTH = 800;
   private static final int HEIGHT = 800;
 
-  private final StackPane mainMenu = new StackPane();
+  private final StackPane contentLayer = new StackPane();
   private final SettingsOverlay settingsOverlay = new SettingsOverlay();
 
   @Override
   public void start(Stage stage) {
-    createMenuScene();
-    stage.setScene(new Scene(mainMenu, WIDTH, HEIGHT));
+    createMenuScene(stage);
+    stage.setScene(new Scene(contentLayer, WIDTH, HEIGHT));
     stage.setFullScreen(true);
     stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
     stage.setFullScreenExitHint("");
-    stage.setTitle("Chess Game");
     stage.setResizable(true);
     stage.show();
   }
 
-  private void createMenuScene() {
+  void createMenuScene(Stage stage) {
+    stage.setTitle("Chess Game");
+
     VBox layout = new VBox(20);
     layout.setAlignment(Pos.CENTER);
     layout.setStyle("-fx-background-color: #997950;");
@@ -52,6 +55,18 @@ public class Main extends Application {
     Button settingsButton = UIUtil.createStyledButtonForMainMenu("Settings");
     Button exitButton = UIUtil.createStyledButtonForMainMenu("Exit");
 
+    startButton.setOnAction(
+        e -> {
+          GameController gameController = new GameController();
+          GameWindow gameWindow = new GameWindow(gameController, settingsOverlay);
+          boolean isFullScreen = stage.isFullScreen();
+          gameWindow.setButtonListener(
+              () -> {
+                createMenuScene(stage);
+              });
+          stage.setTitle("Playing");
+          contentLayer.getChildren().setAll(gameWindow);
+        });
     settingsButton.setOnAction(
         e -> {
           settingsOverlay.showSettingsOverlay();
@@ -65,7 +80,7 @@ public class Main extends Application {
     layout
         .getChildren()
         .addAll(titleLabel, createSpacer(20), startButton, settingsButton, exitButton);
-    mainMenu.getChildren().addAll(layout, settingsOverlay);
+    contentLayer.getChildren().setAll(layout, settingsOverlay);
   }
 
   private Region createSpacer(double height) {

@@ -13,16 +13,28 @@ import javafx.scene.layout.StackPane;
 
 public class GameWindow extends StackPane {
 
+  @FunctionalInterface
+  public interface LeaveBackToMenuButton {
+    void leaveBackToMenu();
+  }
+
+  private LeaveBackToMenuButton exitButtonListener;
   private final GameOverOverlay gameOverOverlay;
   private final PromotionOverlay promotionOverlay;
   private final BoardView boardView;
   private final GameController controller;
+  private final SettingsOverlay settingsOverlay;
 
   private Square promotionMoveFrom;
   private Square promotinMoveTo;
 
-  public GameWindow(GameController controller) {
+  public void setButtonListener(LeaveBackToMenuButton listener) {
+    this.exitButtonListener = listener;
+  }
+
+  public GameWindow(GameController controller, SettingsOverlay settingsOverlay) {
     this.controller = controller;
+    this.settingsOverlay = settingsOverlay;
     this.boardView = new BoardView(controller);
     this.promotionOverlay = new PromotionOverlay();
 
@@ -31,7 +43,8 @@ public class GameWindow extends StackPane {
             e -> {
               restartGame();
             },
-            e -> { // to main Menu
+            e -> {
+              exitButtonListener.leaveBackToMenu();
             });
     boardView.setPromotionListener(
         (from, to, color) -> {
@@ -47,6 +60,9 @@ public class GameWindow extends StackPane {
     boardView.setOnMoveCompletedListener(
         () -> {
           checkGameStatus();
+          if (settingsOverlay.isAutoFlipEnabled()) {
+            boardView.flipBoard();
+          }
         });
     boardView.setAlignment(Pos.CENTER);
     this.setStyle("-fx-background-color: #997950");
@@ -58,7 +74,7 @@ public class GameWindow extends StackPane {
     gameLayer.setCenter(boardContainer);
     gameLayer.setTop(createOptionPanel());
 
-    this.getChildren().addAll(gameLayer, promotionOverlay, gameOverOverlay);
+    this.getChildren().addAll(gameLayer, promotionOverlay, gameOverOverlay, settingsOverlay);
   }
 
   private HBox createOptionPanel() {
@@ -66,13 +82,22 @@ public class GameWindow extends StackPane {
     bottomBar.setStyle("-fx-padding: 15; -fx-background-color:  #754b06 ; -fx-alignment: center;");
 
     Button saveBtn = createStyledButton("Save Game");
+    Button settingsBtn = createStyledButton("Settings");
     Button flipBtn = createStyledButton("Flip Board");
     Button exitBtn = createStyledButton("Exit to Menu");
     flipBtn.setOnAction(
         e -> {
           boardView.flipBoard();
         });
-    bottomBar.getChildren().addAll(saveBtn, flipBtn, exitBtn);
+    settingsBtn.setOnAction(
+        e -> {
+          settingsOverlay.showSettingsOverlay();
+        });
+    exitBtn.setOnAction(
+        e -> {
+          exitButtonListener.leaveBackToMenu();
+        });
+    bottomBar.getChildren().addAll(saveBtn, settingsBtn, flipBtn, exitBtn);
     return bottomBar;
   }
 
@@ -83,7 +108,7 @@ public class GameWindow extends StackPane {
     String normalStyle =
         "-fx-background-color: #cccccc; -fx-text-fill: black; -fx-font-size: 16px; -fx-cursor:"
             + " hand;";
-    String hoverStyle = 
+    String hoverStyle =
         "-fx-background-color: #ffa617; -fx-text-fill: black; -fx-font-size: 16px; -fx-cursor:"
             + " hand;";
     btn.setStyle(normalStyle);

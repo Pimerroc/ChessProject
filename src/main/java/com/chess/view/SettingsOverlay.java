@@ -33,7 +33,7 @@ public class SettingsOverlay extends VBox {
 
     fullScreenSwitch = new ToggleSwitch("Full screen");
     fullScreenSwitch.setFont(Font.font("Segoe UI", FontWeight.BOLD, 16));
-    fullScreenSwitch.setTextFill(Color.web("#e0e0e0"));
+    fullScreenSwitch.setStyle("-fx-text-fill: white; -fx-font-size: 16px;");
     fullScreenSwitch
         .selectedProperty()
         .addListener(

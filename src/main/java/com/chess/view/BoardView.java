@@ -113,8 +113,10 @@ public class BoardView extends GridPane {
               selectedSquare, clickedSquare, selectedPiece.getColor());
         }
       } else {
-        controller.performMove(selectedSquare, clickedSquare);
-        onMoveCompletedListener.checkGameState();
+        if (controller.validateMove(selectedSquare, clickedSquare)) {
+          controller.performMove(selectedSquare, clickedSquare);
+          onMoveCompletedListener.checkGameState();
+        }
       }
       selectedSquare = null;
       refresh();
