@@ -42,4 +42,9 @@ public class Bishop extends Piece {
   public int getValue() {
     return value;
   }
+
+  @Override
+  public char getFEN() {
+    return color == PieceColor.WHITE ? 'B' : 'b';
+  }
 }

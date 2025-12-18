@@ -47,4 +47,9 @@ public class Knight extends Piece {
   public int getValue() {
     return value;
   }
+
+  @Override
+  public char getFEN() {
+    return color == PieceColor.WHITE ? 'N' : 'n';
+  }
 }

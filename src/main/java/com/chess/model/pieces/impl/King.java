@@ -63,4 +63,9 @@ public class King extends Piece {
   public int getValue() {
     return value;
   }
+
+  @Override
+  public char getFEN() {
+    return color == PieceColor.WHITE ? 'K' : 'k';
+  }
 }

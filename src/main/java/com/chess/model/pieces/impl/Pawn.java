@@ -91,4 +91,9 @@ public class Pawn extends Piece {
   public int getValue() {
     return value;
   }
+
+  @Override
+  public char getFEN() {
+    return color == PieceColor.WHITE ? 'P' : 'p';
+  }
 }

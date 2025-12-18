@@ -5,6 +5,8 @@ import com.chess.model.board.Square;
 import com.chess.model.move.Move;
 import com.chess.model.move.PromotionMove;
 import com.chess.model.pieces.Piece;
+import com.chess.util.FENUtil;
+
 import java.util.List;
 
 public class GameController {
@@ -22,6 +24,15 @@ public class GameController {
     board.resetBoard();
   }
 
+  public void loadGameFromFEN(String FEN) {
+    board.clearBoard();
+    FENUtil.loadFen(board, FEN);
+  }
+
+  public String getGameFEN(){
+    return FENUtil.getFen(board);
+  }
+
   public void performMove(Square start, Square end) {
     Piece piece = board.getPiece(start);
     if (piece == null || piece.getColor() != board.getMovingColor()) {
@@ -30,12 +41,12 @@ public class GameController {
 
     List<Move> legalMoves = board.getLegalMovesForPiece(start);
 
-    Move move = null; 
+    Move move = null;
 
     for (Move mv : legalMoves) {
-      if (mv.getEnd().equals(end)) { 
+      if (mv.getEnd().equals(end)) {
         move = mv;
-        break; 
+        break;
       }
     }
     if (move == null) {
@@ -44,11 +55,13 @@ public class GameController {
 
     move.execute();
   }
-  public void performPromotionMove(Square start, Square end, Piece tPiece){
+
+  public void performPromotionMove(Square start, Square end, Piece tPiece) {
     PromotionMove move = new PromotionMove(board, start, end, tPiece);
     move.execute();
   }
-  public boolean validateMove(Square start, Square end){
+
+  public boolean validateMove(Square start, Square end) {
     Piece piece = board.getPiece(start);
     if (piece == null || piece.getColor() != board.getMovingColor()) {
       return false;
@@ -56,12 +69,12 @@ public class GameController {
 
     List<Move> legalMoves = board.getLegalMovesForPiece(start);
 
-    Move move = null; 
+    Move move = null;
 
     for (Move mv : legalMoves) {
-      if (mv.getEnd().equals(end)) { 
+      if (mv.getEnd().equals(end)) {
         move = mv;
-        break; 
+        break;
       }
     }
     if (move == null) {

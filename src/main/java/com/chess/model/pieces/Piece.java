@@ -87,4 +87,6 @@ public abstract class Piece {
   }
 
   public abstract int getValue();
+
+  public abstract char getFEN();
 }

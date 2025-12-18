@@ -21,7 +21,7 @@ public class Board {
     resetBoard();
   }
 
-  public void resetBoard() {
+  public void clearBoard() {
     whitePieces.clear();
     blackPieces.clear();
     for (int i = 0; i < 8; i++) {
@@ -31,6 +31,10 @@ public class Board {
     }
     movingColor = PieceColor.WHITE;
     enPassantTarget = null;
+  }
+
+  public void resetBoard() {
+    clearBoard();
 
     placeRowOfPawns(1, PieceColor.WHITE);
     placeMajorPieces(0, PieceColor.WHITE);
@@ -97,6 +101,10 @@ public class Board {
     }
   }
 
+  public void setMovingColor(PieceColor movingColor) {
+    this.movingColor = movingColor;
+  }
+
   public PieceColor getMovingColor() {
     return movingColor;
   }
@@ -155,6 +163,67 @@ public class Board {
       move.undo();
     }
     return legalMoves;
+  }
+
+  public String getCastle() {
+    StringBuilder sb = new StringBuilder();
+
+    Piece wKing = getPiece(new Square(4, 0));
+    if (wKing instanceof King && !wKing.hasMoved()) {
+      Piece wRookK = getPiece(new Square(7, 0));
+      if (wRookK instanceof Rook && !wRookK.hasMoved()) {
+        sb.append("K");
+      }
+      Piece wRookQ = getPiece(new Square(0, 0));
+      if (wRookQ instanceof Rook && !wRookQ.hasMoved()) {
+        sb.append("Q");
+      }
+    }
+
+    Piece bKing = getPiece(new Square(4, 7));
+    if (bKing instanceof King && !bKing.hasMoved()) {
+      Piece bRookK = getPiece(new Square(7, 7));
+      if (bRookK instanceof Rook && !bRookK.hasMoved()) {
+        sb.append("k");
+      }
+      Piece bRookQ = getPiece(new Square(0, 7));
+      if (bRookQ instanceof Rook && !bRookQ.hasMoved()) {
+        sb.append("q");
+      }
+    }
+
+    return sb.length() == 0 ? "-" : sb.toString();
+  }
+
+  public void setCastle(String castleString) {
+    for (Piece p : whitePieces) {
+      if (p instanceof King || p instanceof Rook) p.setHasMoved(true);
+    }
+    for (Piece p : blackPieces) {
+      if (p instanceof King || p instanceof Rook) p.setHasMoved(true);
+    }
+
+    if (castleString == null || castleString.equals("-")) return;
+
+    if (castleString.contains("K")) {
+      enableCastle(new Square(4, 0), new Square(7, 0));
+    }
+    if (castleString.contains("Q")) {
+      enableCastle(new Square(4, 0), new Square(0, 0));
+    }
+    if (castleString.contains("k")) {
+      enableCastle(new Square(4, 7), new Square(7, 7));
+    }
+    if (castleString.contains("q")) {
+      enableCastle(new Square(4, 7), new Square(0, 7));
+    }
+  }
+
+  private void enableCastle(Square kingPos, Square rookPos) {
+    Piece king = getPiece(kingPos);
+    Piece rook = getPiece(rookPos);
+    if (king instanceof King) king.setHasMoved(false);
+    if (rook instanceof Rook) rook.setHasMoved(false);
   }
 
   public GameState checkGameState() {

@@ -41,4 +41,9 @@ public class Rook extends Piece {
   public int getValue() {
     return value;
   }
+
+  @Override
+  public char getFEN() {
+    return color == PieceColor.WHITE ? 'R' : 'r';
+  }
 }
